@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>KANEDA // TERMINAL V11</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Share+Tech+Mono&family=Fira+Code:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              accent: "var(--accent)",
+              "accent-dim": "var(--accent-dim)",
+              "dark-bg": "#050505",
+              "panel-bg": "#0A0A0A",
+            },
+            fontFamily: {
+              header: ["Orbitron", "sans-serif"],
+              ui: ["Share Tech Mono", "monospace"],
+              code: ["Fira Code", "monospace"],
+            },
+            screens: { xs: "375px" },
+            backgroundImage: {},
+          },
+        },
+      };
+    </script>
+    <style>
+      :root {
+        --accent: #e12120;
+        --accent-dim: rgba(225, 33, 32, 0.15);
+      }
+      body.theme-matrix {
+        --accent: #00ff41;
+        --accent-dim: rgba(0, 255, 65, 0.15);
+      }
+      body.theme-amber {
+        --accent: #ffb000;
+        --accent-dim: rgba(255, 176, 0, 0.15);
+      }
+      body.theme-cyan {
+        --accent: #00e5ff;
+        --accent-dim: rgba(0, 229, 255, 0.15);
+      }
+      body.theme-purple {
+        --accent: #d900ff;
+        --accent-dim: rgba(217, 0, 255, 0.15);
+      }
+      body.theme-white {
+        --accent: #ffffff;
+        --accent-dim: rgba(255, 255, 255, 0.15);
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #000000;
+        touch-action: manipulation;
+        overflow: hidden;
+      }
+
+      #root {
+        height: 100%;
+        width: 100%;
+      }
+
+      /* CRT FX */
+      .scanlines {
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0) 50%,
+          rgba(0, 0, 0, 0.3) 50%,
+          rgba(0, 0, 0, 0.3)
+        );
+        background-size: 100% 4px;
+        pointer-events: none;
+        z-index: 50;
+        position: fixed;
+        inset: 0;
+      }
+      .vignette {
+        background: radial-gradient(
+          circle,
+          rgba(0, 0, 0, 0) 50%,
+          rgba(0, 0, 0, 0.9) 100%
+        );
+        pointer-events: none;
+        z-index: 49;
+        position: fixed;
+        inset: 0;
+      }
+
+      /* Cyberpunk UI Utils */
+      .clip-corner-1 {
+        clip-path: polygon(
+          10px 0,
+          100% 0,
+          100% calc(100% - 10px),
+          calc(100% - 10px) 100%,
+          0 100%,
+          0 10px
+        );
+      }
+      .clip-corner-2 {
+        clip-path: polygon(
+          0 0,
+          100% 0,
+          100% calc(100% - 20px),
+          calc(100% - 20px) 100%,
+          0 100%
+        );
+      }
+      .clip-corner-4 {
+        clip-path: polygon(
+          20px 0,
+          100% 0,
+          100% calc(100% - 20px),
+          calc(100% - 20px) 100%,
+          0 100%,
+          0 20px
+        );
+      }
+
+      .caution-tape {
+        background-image: repeating-linear-gradient(
+          45deg,
+          var(--accent),
+          var(--accent) 10px,
+          transparent 10px,
+          transparent 20px
+        );
+        opacity: 0.2;
+      }
+
+      /* UI ELEMENTS */
+      .char {
+        border-bottom: 2px solid transparent;
+        transition: color 0.05s;
+      }
+      .char.correct {
+        color: #fff;
+        text-shadow: 0 0 5px #fff;
+        opacity: 1;
+      }
+      .char.wrong {
+        color: var(--accent);
+        background: var(--accent-dim);
+        opacity: 1;
+      }
+      .char.pending {
+        opacity: 0.25;
+      }
+      .char.active {
+        background-color: var(--accent);
+        color: #000;
+        opacity: 1;
+        animation: cursor-pulse 1s infinite;
+      }
+      @keyframes cursor-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .btn-cyber {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s;
+        clip-path: polygon(
+          10px 0,
+          100% 0,
+          100% calc(100% - 10px),
+          calc(100% - 10px) 100%,
+          0 100%,
+          0 10px
+        );
+        border: none;
+        background: #111;
+      }
+      .btn-cyber::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 1px solid #333;
+        clip-path: polygon(
+          10px 0,
+          100% 0,
+          100% calc(100% - 10px),
+          calc(100% - 10px) 100%,
+          0 100%,
+          0 10px
+        );
+        pointer-events: none;
+      }
+      .btn-cyber:hover {
+        background: #222;
+      }
+      .btn-cyber:hover::before {
+        border-color: var(--accent);
+      }
+      .btn-cyber:active {
+        transform: scale(0.98);
+      }
+      .btn-cyber:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .heat-segment {
+        background: #222;
+        flex: 1;
+        margin: 0 1px;
+        transition: background 0.2s;
+      }
+      .heat-segment.active {
+        background: #ffb000;
+        box-shadow: 0 0 5px #ffb000;
+      }
+
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1a1a1a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--accent);
+      }
+
+      .shake {
+        animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      }
+      @keyframes shake {
+        10%,
+        90% {
+          transform: translate3d(-1px, 0, 0);
+        }
+        20%,
+        80% {
+          transform: translate3d(2px, 0, 0);
+        }
+        30%,
+        50%,
+        70% {
+          transform: translate3d(-4px, 0, 0);
+        }
+        40%,
+        60% {
+          transform: translate3d(4px, 0, 0);
+        }
+      }
+
+      .hide-on-keyboard {
+      }
+      @media (max-height: 500px) {
+        .hide-on-keyboard {
+          display: none !important;
+        }
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@^19.2.1",
+          "react-dom/": "https://esm.sh/react-dom@^19.2.1/",
+          "react/": "https://esm.sh/react@^19.2.1/",
+          "lucide-react": "https://esm.sh/lucide-react@^0.560.0",
+          "recharts": "https://esm.sh/recharts@^3.5.1"
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-black text-gray-300">
+    <div id="root" class="h-full w-full"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
